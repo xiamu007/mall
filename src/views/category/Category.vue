@@ -110,13 +110,26 @@ export default {
   name: "component_name",
   data() {
     return {
-      scroll:""
+      bscroll11:""
     }
   },
-  mounted() {
-    // console.log(document.querySelector(".wrap"));
-    
-    this.scroll = new BScroll(document.querySelector(".wrap"))
+  mounted() {    
+    this.bscroll = new BScroll(document.querySelector(".wrap"),{
+      probeType: 3,
+      pullUpLoad: true
+    })
+
+    this.bscroll.on("scroll", (position) => {
+      // console.log(position);
+    })
+    this.bscroll.on("pullingUp", () => {
+      console.log("上啦加载更多");
+      setTimeout(() => {
+        this.bscroll.finishPullUp();
+      }, 2000)
+
+    })  
+
   },
 }
 </script>
@@ -125,6 +138,5 @@ export default {
     height: 150px;
     background: #f00;
     overflow: hidden;
-    /* overflow-y: scroll; */
   }
 </style>
