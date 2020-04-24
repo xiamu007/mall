@@ -34,7 +34,7 @@ import Scroll from "components/common/scroll/Scroll"
 import GoodsList from "components/content/goods/GoodsList"
 
 import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail"
-
+import {itemListenerMixin} from "common/mixin"
 export default {
   name: "Detail",
   data() {
@@ -49,6 +49,7 @@ export default {
       recommendList: [],
     }
   },
+  mixins:[itemListenerMixin],
   components: {
     Scroll,
     GoodsList,
@@ -95,11 +96,9 @@ export default {
         .then(res => {
           this.recommendList = res.data.list
         })
-
     },
     imgLoad() {
       this.$refs.scroll.refresh();
-      
     }
   },
 }

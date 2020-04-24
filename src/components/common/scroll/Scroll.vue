@@ -48,16 +48,20 @@ export default {
     }
   },
   methods: {
+    // 回到顶部
     scrollTo(x, y, time = 300) {
       this.bscroll && this.bscroll.scrollTo(x,y,time)
     },
+    // 下拉加载更多
     finishPullUp() {
       this.bscroll && this.bscroll.finishPullUp();
     },
+    // 刷新
     refresh() {
-      // console.log("----");
+      console.log("----");
       this.bscroll && this.bscroll.refresh();
     },
+    // 获取Y值
     getY() {
       return this.bscroll ? this.bscroll.y : 0
     }

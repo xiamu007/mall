@@ -42,6 +42,7 @@ import FeatureView from "./childComps/FeatureView"
 
 import {getHomeMultidata,getHomeGoods} from "network/home"
 import {debounce} from "common/utils"
+import {itemListenerMixin} from "common/mixin"
 export default {
   name: "Home",
   components: {
@@ -70,8 +71,10 @@ export default {
       taboffserTop: 0,
       isSwiper:false,
       saveY: 0,
+      // itemImgListener: null, 使用了混入
     }
   },
+  mixins:[itemListenerMixin],
   computed: {
     showGoods() {
       return this.goods[this.currenType].list
@@ -85,25 +88,29 @@ export default {
 
   },
   mounted() {
+    // 使用了混入
     // 监听图片
-    const refresh = debounce(this.$refs.scroll.refresh,50)
-    this.$bus.$on("imgLoad",() => {
-      refresh()
-    })
+    // const refresh = debounce(this.$refs.scroll.refresh,100)
+    // 对监听事件进行保存
+    // this.itemImgListener = () => {
+    //   refresh();
+    // }
+    // this.$bus.$on("imgLoad",this.itemImgListener)
   },
   activated() {
+    // 进来时设置y值
     this.$refs.scroll.refresh();
     this.$refs.scroll.scrollTo(0,this.saveY,0);
-
   },
   deactivated() {
+    // 得到离开时的y值
     this.saveY = this.$refs.scroll.getY();
-    console.log(this.saveY);
+    // 取消事件全局监听
+    this.$bus.$off("imgLoad", this.itemImgListener)
+
   },
   methods: {
-
     // 事件监听调用的方法
-
     tabClick(index) {
       switch(index) {
         case 0:
