@@ -14,6 +14,10 @@
         <td class="value"><span>{{item.value}}</span></td>
       </tr>
     </table>
+    
+    <div class="info-img2" v-if="paramInfo.image">
+      <img :src="paramInfo.image[0]" alt="">
+    </div>
   </div>
 </template>
 <script>

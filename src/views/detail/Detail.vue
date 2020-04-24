@@ -13,10 +13,10 @@
       <detail-goods-info :detailInfo="detailInfo" @imgLoad="imgLoad"/>
       <!-- 参数信息 -->
       <detail-param-info :paramInfo="paramInfo"/>
-      <br><br><br><br><br>
-      <br><br><br><br><br>
-      <br><br><br><br><br>
-      <br><br><br><br><br>
+      <!-- 评论信息 -->
+      <detail-comment-info :commentInfo="commentInfo"/>
+      <!-- 推荐信息 -->
+      <goods-list :goodsList="recommendList"/>
     </scroll>
   </div>
 </template>
@@ -28,10 +28,12 @@ import DetailBaseInfo from "./childComps/DetailBaseInfo"
 import DetailShopInfo from "./childComps/DetailShopInfo"
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo"
 import DetailParamInfo from "./childComps/DetailParamInfo"
+import DetailCommentInfo from "./childComps/DetailCommentInfo"
 
 import Scroll from "components/common/scroll/Scroll"
+import GoodsList from "components/content/goods/GoodsList"
 
-import {getDetail, Goods, Shop, GoodsParam} from "network/detail"
+import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail"
 
 export default {
   name: "Detail",
@@ -43,10 +45,13 @@ export default {
       shop: {},
       detailInfo: {},
       paramInfo: {},
+      commentInfo: {},
+      recommendList: [],
     }
   },
   components: {
     Scroll,
+    GoodsList,
 
     DetailNavBar,
     DetailSwiper,
@@ -54,6 +59,7 @@ export default {
     DetailShopInfo,
     DetailGoodsInfo,
     DetailParamInfo,
+    DetailCommentInfo,
   },
   created() {
     // 获取请求的id
@@ -62,6 +68,7 @@ export default {
   },
   methods: {
     getDetails() {
+      // 请求详情数据
       getDetail(this.iid)
         .then((res) => {
           console.log(res);
@@ -77,9 +84,18 @@ export default {
           // console.log(this.detailInfo);
           // 获取尺码等
           this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
-          console.log(this.paramInfo);
-          
+          // console.log(this.paramInfo);
+          // 保存评论信息
+          if(data.rate.list) {
+            this.commentInfo = data.rate.list[0];
+          }
       })
+      // 请求推荐数据
+      getRecommend()
+        .then(res => {
+          this.recommendList = res.data.list
+        })
+
     },
     imgLoad() {
       this.$refs.scroll.refresh();
