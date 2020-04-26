@@ -12,7 +12,7 @@ export const itemListenerMixin = {
       refresh();
     }
     this.$bus.$on("imgLoad",this.itemImgListener)
-    console.log("我是混入内容");
+    // console.log("我是混入内容");
     
   },
 }

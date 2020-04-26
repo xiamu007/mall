@@ -1,8 +1,11 @@
 <template>
   <div id="detail">
     <!-- 顶部 -->
-    <detail-nav-bar class="navBar"/>
-    <scroll class="scroll" ref="scroll">
+    <detail-nav-bar class="navBar" @navClick="navClick" ref="nav"/>
+    <scroll class="scroll" 
+            ref="scroll" 
+            :probeType="3" 
+            @changePos="changePos">
       <!-- 轮播图 -->
       <detail-swiper :topImages="topImages"/>
       <!-- 商品信息 -->
@@ -12,12 +15,13 @@
       <!-- 详情信息 -->
       <detail-goods-info :detailInfo="detailInfo" @imgLoad="imgLoad"/>
       <!-- 参数信息 -->
-      <detail-param-info :paramInfo="paramInfo"/>
+      <detail-param-info ref="param" :paramInfo="paramInfo"/>
       <!-- 评论信息 -->
-      <detail-comment-info :commentInfo="commentInfo"/>
+      <detail-comment-info ref="comment" :commentInfo="commentInfo"/>
       <!-- 推荐信息 -->
-      <goods-list :goodsList="recommendList"/>
+      <goods-list ref="recommend" :goodsList="recommendList"/>
     </scroll>
+    <detail-bottom-bar/>
   </div>
 </template>
 <script>
@@ -29,6 +33,7 @@ import DetailShopInfo from "./childComps/DetailShopInfo"
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo"
 import DetailParamInfo from "./childComps/DetailParamInfo"
 import DetailCommentInfo from "./childComps/DetailCommentInfo"
+import DetailBottomBar from "./childComps/DetailBottomBar"
 
 import Scroll from "components/common/scroll/Scroll"
 import GoodsList from "components/content/goods/GoodsList"
@@ -47,6 +52,8 @@ export default {
       paramInfo: {},
       commentInfo: {},
       recommendList: [],
+      themeTops: [],
+      currentIndex: 0,
     }
   },
   mixins:[itemListenerMixin],
@@ -61,6 +68,7 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
+    DetailBottomBar,
   },
   created() {
     // 获取请求的id
@@ -68,11 +76,11 @@ export default {
     this.getDetails();
   },
   methods: {
+    // 请求详情数据
     getDetails() {
-      // 请求详情数据
       getDetail(this.iid)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           // 获取轮播图数据
           const data = res.result;
           this.topImages = data.itemInfo.topImages;        
@@ -97,8 +105,41 @@ export default {
           this.recommendList = res.data.list
         })
     },
+    // 刷新图片和获取4个Y值
     imgLoad() {
       this.$refs.scroll.refresh();
+      this.themeTops.push(0);
+      this.themeTops.push(this.$refs.param.$el.offsetTop-44);
+      this.themeTops.push(this.$refs.comment.$el.offsetTop-44);
+      this.themeTops.push(this.$refs.recommend.$el.offsetTop-44);
+      this.themeTops.push(Number.MAX_VALUE)
+      console.log(this.themeTops);
+    },
+    // 点击顶部导航跳转到相应的位置
+    navClick(index) {
+      this.$refs.scroll.scrollTo(0, -this.themeTops[index], 300)
+    },
+    // 监听滚动
+    changePos(position) {
+      const positionY = -position.y
+      // console.log(positionY);
+      // 比较hack的方法
+      for(let i = 0; i < this.themeTops.length-1; i++) {
+        if((this.currentIndex !== i) && (positionY >= this.themeTops[i] && positionY < this.themeTops[i+1])) {
+          this.currentIndex = i ;
+          this.$refs.nav.currentIndex = this.currentIndex;  
+
+        }
+      }
+
+      // for(let i = 0; i < this.themeTops.length; i++) {
+      //   const length = this.themeTops.length;
+      //   if((this.currentIndex !== i) && ((i < length-1 && positionY >= this.themeTops[i] && positionY < this.themeTops[i+1]) || 
+      //      (i == length-1 && positionY >= this.themeTops[i]))) {
+      //       this.currentIndex = i;
+      //       this.$refs.nav.currentIndex = this.currentIndex;  
+      //   }
+      // }
     }
   },
 }
@@ -116,6 +157,6 @@ export default {
     background: #fff;
   }
   .scroll {
-    height: calc(100% - 44px);
+    height: calc(100% - 93px);
   }
 </style>

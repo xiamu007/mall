@@ -18,10 +18,12 @@ export default {
     }
   },
   props: {
+    // 是否监听滚动,0是不监听,还有有1,2,3
     probeType: {
       type: Number,
       default: 0,
     },
+    // 是否监听上啦加载更多
     pullUpLoad: {
       type: Boolean,
       default: false,
@@ -58,7 +60,7 @@ export default {
     },
     // 刷新
     refresh() {
-      console.log("----");
+      // console.log("----");
       this.bscroll && this.bscroll.refresh();
     },
     // 获取Y值
