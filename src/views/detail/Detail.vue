@@ -1,11 +1,15 @@
 <template>
   <div id="detail">
+
     <!-- 顶部 -->
     <detail-nav-bar class="navBar" @navClick="navClick" ref="nav"/>
     <scroll class="scroll" 
             ref="scroll" 
             :probeType="3" 
             @changePos="changePos">
+                      <div>
+      {{$store.state.cartList}}
+    </div>
       <!-- 轮播图 -->
       <detail-swiper :topImages="topImages"/>
       <!-- 商品信息 -->
@@ -21,7 +25,10 @@
       <!-- 推荐信息 -->
       <goods-list ref="recommend" :goodsList="recommendList"/>
     </scroll>
-    <detail-bottom-bar/>
+    <!-- 回到顶部 -->
+    <back-top @click.native="backTopClick" v-show="isBackTop"></back-top>
+    <!-- 底部工具栏 -->
+    <detail-bottom-bar @addToCart="addToCart"/>
   </div>
 </template>
 <script>
@@ -39,7 +46,7 @@ import Scroll from "components/common/scroll/Scroll"
 import GoodsList from "components/content/goods/GoodsList"
 
 import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail"
-import {itemListenerMixin} from "common/mixin"
+import {itemListenerMixin, backTopMixin} from "common/mixin"
 export default {
   name: "Detail",
   data() {
@@ -56,7 +63,7 @@ export default {
       currentIndex: 0,
     }
   },
-  mixins:[itemListenerMixin],
+  mixins:[itemListenerMixin, backTopMixin],
   components: {
     Scroll,
     GoodsList,
@@ -80,7 +87,7 @@ export default {
     getDetails() {
       getDetail(this.iid)
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           // 获取轮播图数据
           const data = res.result;
           this.topImages = data.itemInfo.topImages;        
@@ -121,6 +128,9 @@ export default {
     },
     // 监听滚动
     changePos(position) {
+      // 2.监听回到顶部的显示
+      this.isBackTop = -(position.y) > 1000;
+      // 1.监听滚动和上面的导航栏
       const positionY = -position.y
       // console.log(positionY);
       // 比较hack的方法
@@ -128,10 +138,8 @@ export default {
         if((this.currentIndex !== i) && (positionY >= this.themeTops[i] && positionY < this.themeTops[i+1])) {
           this.currentIndex = i ;
           this.$refs.nav.currentIndex = this.currentIndex;  
-
         }
       }
-
       // for(let i = 0; i < this.themeTops.length; i++) {
       //   const length = this.themeTops.length;
       //   if((this.currentIndex !== i) && ((i < length-1 && positionY >= this.themeTops[i] && positionY < this.themeTops[i+1]) || 
@@ -140,6 +148,20 @@ export default {
       //       this.$refs.nav.currentIndex = this.currentIndex;  
       //   }
       // }
+    },
+    // 添加至购物车
+    addToCart() {
+      // 获取要展示的信息
+      const product = {}
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.nowPrice;
+      product.iid = this.iid;
+      console.log(product);
+      
+      // 添加到购物车
+      this.$store.commit("addCart", product)
     }
   },
 }

@@ -1,4 +1,5 @@
 import {debounce} from "./utils"
+import BackTop from "components/content/backTop/BackTop"
 export const itemListenerMixin = {
   data() {
     return {
@@ -15,4 +16,21 @@ export const itemListenerMixin = {
     // console.log("我是混入内容");
     
   },
+}
+export const backTopMixin = {
+  data() {
+    return {
+      isBackTop:false,
+    }
+  },
+  components: {
+    BackTop,
+  },
+  methods: {
+    // 回到顶部
+    backTopClick() {
+      this.$refs.scroll.scrollTo(0,0)
+    },
+  },
+
 }
