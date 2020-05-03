@@ -7,9 +7,9 @@
             ref="scroll" 
             :probeType="3" 
             @changePos="changePos">
-                      <div>
+                      <!-- <div>
       {{$store.state.cartList}}
-    </div>
+    </div> -->
       <!-- 轮播图 -->
       <detail-swiper :topImages="topImages"/>
       <!-- 商品信息 -->
@@ -161,7 +161,7 @@ export default {
       console.log(product);
       
       // 添加到购物车
-      this.$store.commit("addCart", product)
+      this.$store.dispatch("addCart", product)
     }
   },
 }
@@ -180,5 +180,6 @@ export default {
   }
   .scroll {
     height: calc(100% - 93px);
+    overflow: hidden;
   }
 </style>
