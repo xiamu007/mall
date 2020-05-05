@@ -1,7 +1,7 @@
 <template>
   <div class="buttonBar">
     <div class="left">
-      <check-button/>
+      <check-button :isChecked="isSelectAll" @click.native="checkClick"/>
       <div>全选</div>
     </div>
 
@@ -11,7 +11,7 @@
     </div>
 
     <div class="right">
-      <span>去结算：({{cartLength}})</span>
+      <span>去结算：({{checkLength}})</span>
     </div>
   </div>
 </template>
@@ -24,14 +24,38 @@ export default {
     CheckButton
   },
   computed: {
+    ...mapGetters(["cartLength","cartList"]),
     totalPrice() {
       return "¥" + this.$store.state.cartList.filter(item => {
         return item.isChecked
       }).reduce((preValue, item) => {
         return preValue + item.price * item.count
-      }, 0) 
+      }, 0).toFixed(2);
     },
-    ...mapGetters(["cartLength"])
+    checkLength() {
+      return this.cartList.filter(item => item.isChecked).length
+    },
+    // 判断是否全选
+    isSelectAll() {
+      if (this.cartList.length === 0) return false
+      for (let item of this.cartList) {
+        if (!item.isChecked) {
+          return false
+        }
+      }
+      return true;
+    },
+
+  },
+  methods: {
+    checkClick() {
+      if(this.isSelectAll) {
+        this.cartList.forEach(item => item.isChecked = false)
+      } else {
+        this.cartList.forEach(item => item.isChecked = true)
+      }
+      
+    }
   },
 }
 </script>
@@ -56,5 +80,11 @@ export default {
   .price {
     display: flex;
     flex: 1;
+  }
+  .right {
+    width: 90px;
+    text-align: center;
+    background-color: #f00;
+    color: #fff;
   }
 </style>

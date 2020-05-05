@@ -22,7 +22,7 @@ export default {
   name: "CartListItem",
   data() {
     return {
-      isChecked: true,
+      
     }
   },
   props:{
@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     checkClick() {
-    this.listItem.isChecked = !this.listItem.isChecked;
+      this.listItem.isChecked = !this.listItem.isChecked;
     },
 
   },

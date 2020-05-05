@@ -47,6 +47,8 @@ import GoodsList from "components/content/goods/GoodsList"
 
 import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail"
 import {itemListenerMixin, backTopMixin} from "common/mixin"
+
+import {mapActions} from "vuex"
 export default {
   name: "Detail",
   data() {
@@ -83,6 +85,7 @@ export default {
     this.getDetails();
   },
   methods: {
+    ...mapActions(["addCart"]),
     // 请求详情数据
     getDetails() {
       getDetail(this.iid)
@@ -158,10 +161,16 @@ export default {
       product.desc = this.goods.desc;
       product.price = this.goods.nowPrice;
       product.iid = this.iid;
-      console.log(product);
+      // console.log(product);
       
       // 添加到购物车
-      this.$store.dispatch("addCart", product)
+      this.addCart(product).then(res => {
+        console.log(res);
+        
+      })
+      // this.$store.dispatch("addCart", product).then(res => {
+      //   console.log(res);
+      // })
     }
   },
 }
